@@ -72,6 +72,11 @@ resource azurerm_network_interface NIC {
   tags = var.tags
 }
 
+resource azurerm_network_interface_security_group_association nic-nsg {
+  network_interface_id      = azurerm_network_interface.NIC.id
+  network_security_group_id = azurerm_network_security_group.NSG.id
+}
+
 resource azurerm_virtual_machine VM {
   name                             = var.name
   depends_on                       = [var.vm_depends_on]
@@ -132,6 +137,12 @@ resource azurerm_virtual_machine VM {
     content {
       enabled     = true
       storage_uri = azurerm_storage_account.boot_diagnostic[0].primary_blob_endpoint
+    }
+  }
+  dynamic "identity" {
+    for_each = local.assign-identity
+    content {
+      type = "SystemAssigned"
     }
   }
   tags = var.tags

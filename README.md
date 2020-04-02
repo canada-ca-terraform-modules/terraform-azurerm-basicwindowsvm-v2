@@ -28,7 +28,7 @@ Optional (depending on options configured):
 
 ```terraform
 module "jumpbox" {
-  source = "github.com/canada-ca-terraform-modules/basicwindowsvm?ref=20200321.1"
+  source = "github.com/canada-ca-terraform-modules/basicwindowsvm?ref=20200402.1"
 
   name                              = "jumpbox"
   resource_group_name               = "some-RG-Name"
@@ -73,6 +73,7 @@ module "jumpbox" {
 | domainToJoin                            | object | no       | Object containing the configuration related to the Active Directory Domain to join. - [domain to join](#domain-join-object)                                                                                 |
 | encryptDisk                             | object | no       | Configure if VM disks should be encrypted with Bitlocker. Default null - [encryptDisk](#encryptDisk-object)                                                                                                 |
 | dependancyAgent                         | bool   | no       | Installs the dependancy agent for service map integration. Default: false                                                                      
+| AADLoginForWindows                      | bool   | no       | Installs the Azure AD login agent. Default: false |
 | monitoringAgent                         | object | no       | Configure Azure monitoring on VM. Requires configured log analytics workspace. - [monitoring agent](#monitoring-agent-object)                                                                               |
 | antimalware                             | object | no       | Configure Azure antimalware on VM. - [antimalware](#antimalware-object)                                                                                                                                     |
 | shutdownConfig                          | object | no       | Configure desired VM shutdown time - [shutdown config](#shutdown-config-object)                                                                                                                             |
@@ -317,6 +318,7 @@ shutdownConfig = {
 
 | Date     | Release    | Change                                                                                    |
 | -------- | ---------- | ----------------------------------------------------------------------------------------- |
+| 20200402 | 20200402.1 | Add support for AAD login to VM                                                           |
 | 20191119 | 20191119.1 | Fix variable format. Update how workspace is provided to MicrosoftMonitoringAgent WARNING |
 | 20191015 | 20191015.1 | Adopt new VM resource naming convention                                                   |
 | 20191008 | 20191008.1 | Adding support for os and data managed disk type                                          |
