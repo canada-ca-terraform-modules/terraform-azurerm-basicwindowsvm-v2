@@ -13,5 +13,4 @@ resource "azurerm_virtual_machine_extension" "AADLoginForWindows" {
   type_handler_version       = "0.3"
   auto_upgrade_minor_version = true
   depends_on                 = [azurerm_virtual_machine_extension.CustomScriptExtension]
-  tags                       = var.tags
 }

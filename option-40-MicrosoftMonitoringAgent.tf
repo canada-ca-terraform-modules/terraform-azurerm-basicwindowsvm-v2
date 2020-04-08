@@ -35,6 +35,4 @@ resource "azurerm_virtual_machine_extension" "MicrosoftMonitoringAgent" {
           "workspaceKey": "${var.monitoringAgent.primary_shared_key}"
         }
   PROTECTED_SETTINGS
-
-  tags = var.tags
 }

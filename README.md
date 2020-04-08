@@ -28,7 +28,7 @@ Optional (depending on options configured):
 
 ```terraform
 module "jumpbox" {
-  source = "github.com/canada-ca-terraform-modules/basicwindowsvm?ref=20200402.1"
+  source = "github.com/canada-ca-terraform-modules/basicwindowsvm?ref=20200408.1"
 
   name                              = "jumpbox"
   resource_group_name               = "some-RG-Name"
@@ -318,6 +318,7 @@ shutdownConfig = {
 
 | Date     | Release    | Change                                                                                    |
 | -------- | ---------- | ----------------------------------------------------------------------------------------- |
+| 20200408 | 20200408.1 | Removing tags from Extensions resources to prevent redeploy on tags update                |
 | 20200402 | 20200402.1 | Add support for AAD login to VM                                                           |
 | 20191119 | 20191119.1 | Fix variable format. Update how workspace is provided to MicrosoftMonitoringAgent WARNING |
 | 20191015 | 20191015.1 | Adopt new VM resource naming convention                                                   |
