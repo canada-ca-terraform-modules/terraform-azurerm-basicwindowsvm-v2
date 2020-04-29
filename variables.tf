@@ -16,7 +16,8 @@ variable "name" {
 }
 
 variable "data_disk_sizes_gb" {
-  description = "List of data disk sizes in gigabytes required for the VM. EG.: If 3 data disks are required then data_disk_size_gb might look like [40,100,60] for disk 1 of 40 GB, disk 2 of 100 GB and disk 3 of 60 GB"
+  type        = list
+  description = "Map of data disk sizes in gigabytes required for the VM. EG.: If 3 data disks are required then data_disk_size_gb might look like [40,100,60] for disk 1 of 40 GB, disk 2 of 100 GB and disk 3 of 60 GB"
   default     = []
 }
 
@@ -103,10 +104,6 @@ variable "admin_password" {
   description = "Name of the VM admin account"
 }
 
-variable "os_managed_disk_type" {
-  default = "Standard_LRS"
-}
-
 variable "data_managed_disk_type" {
   default = "Standard_LRS"
 }
@@ -129,12 +126,14 @@ variable "plan" {
   default     = null
 }
 
-variable "storage_os_disk" {
+variable "os_disk" {
+  #was storage_os_disk
   default = {
     caching       = "ReadWrite"
-    create_option = "FromImage"
-    os_type       = null
-    disk_size_gb  = null
+    #create_option = "FromImage" #removed
+    #os_type       = null #removed
+    disk_size_gb  = null      
+    storage_account_type = "Standard_LRS" #was os_managed_disk_type, a sperate variable
   }
 }
 
@@ -145,7 +144,7 @@ variable "license_type" {
 
 variable "availability_set_id" {
   description = "Sets the id for the availability set to use for the VM"
-  default = ""
+  default = null #was ""
 }
 
 variable "boot_diagnostic" {

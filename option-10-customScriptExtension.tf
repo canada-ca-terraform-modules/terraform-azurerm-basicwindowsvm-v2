@@ -14,7 +14,7 @@ resource "azurerm_virtual_machine_extension" "CustomScriptExtension" {
 
   count                = var.custom_data == null ? 0 : 1
   name                 = "CustomScriptExtension"
-  virtual_machine_id   = azurerm_virtual_machine.VM.id
+  virtual_machine_id   = azurerm_windows_virtual_machine.VM.id
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"
   type_handler_version = "1.9"
