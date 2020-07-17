@@ -72,6 +72,12 @@ resource azurerm_network_interface NIC {
   tags = var.tags
 }
 
+resource "azurerm_network_interface_application_security_group_association" "ASG" {
+  count                         = var.ASG == null ? 0 : 1
+  network_interface_id          = azurerm_network_interface.NIC.id
+  application_security_group_id = var.ASG.id
+}
+
 resource azurerm_network_interface_security_group_association nic-nsg {
   network_interface_id      = azurerm_network_interface.NIC.id
   network_security_group_id = azurerm_network_security_group.NSG.id

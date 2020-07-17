@@ -151,3 +151,8 @@ variable "availability_set_id" {
 variable "boot_diagnostic" {
   default = false
 }
+
+variable "ASG" {
+  description = "Application Security Group object to use to assign the NIC to."
+  default     = null
+}
