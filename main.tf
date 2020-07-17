@@ -88,7 +88,7 @@ resource "azurerm_network_interface_backend_address_pool_association" "LB" {
 
   network_interface_id    = azurerm_network_interface.NIC.id
   ip_configuration_name   = "ipconfig1"
-  backend_address_pool_id = each.value
+  backend_address_pool_id = count.value
 }
 
 resource azurerm_virtual_machine VM {
