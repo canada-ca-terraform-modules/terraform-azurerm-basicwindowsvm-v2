@@ -84,9 +84,11 @@ resource azurerm_network_interface_security_group_association nic-nsg {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "LB" {
+  count = var.load_balancer_backend_address_pools_ids
+
   network_interface_id    = azurerm_network_interface.NIC.id
-  ip_configuration_name   = "${var.name}-nic1"
-  backend_address_pool_id = var.load_balancer_backend_address_pools_ids
+  ip_configuration_name   = "ipconfig1"
+  backend_address_pool_id = each.value
 }
 
 resource azurerm_virtual_machine VM {
