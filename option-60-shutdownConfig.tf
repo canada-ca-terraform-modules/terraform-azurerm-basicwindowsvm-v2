@@ -72,7 +72,7 @@ DEPLOY
 
   # these key-value pairs are passed into the ARM Template's `parameters` block
   parameters = {
-    "computerName" = azurerm_virtual_machine.VM.name
+    "computerName" = azurerm_windows_virtual_machine.VM.name
     "autoShutdownStatus" = var.shutdownConfig.autoShutdownStatus
     "autoShutdownTime" = var.shutdownConfig.autoShutdownTime
     "autoShutdownTimeZone" = var.shutdownConfig.autoShutdownTimeZone

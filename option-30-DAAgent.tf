@@ -7,7 +7,7 @@ variable "dependancyAgent" {
 resource "azurerm_virtual_machine_extension" "DAAgentForWindows" {
   count                      = var.dependancyAgent == null ? 0 : 1
   name                       = "DAAgentForWindows"
-  virtual_machine_id         = azurerm_virtual_machine.VM.id
+  virtual_machine_id         = azurerm_windows_virtual_machine.VM.id
   publisher                  = "Microsoft.Azure.Monitoring.DependencyAgent"
   type                       = "DependencyAgentWindows"
   type_handler_version       = "9.5"

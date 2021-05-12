@@ -18,7 +18,7 @@ resource "azurerm_virtual_machine_extension" "MicrosoftMonitoringAgent" {
   count                      = var.monitoringAgent == null ? 0 : 1
   name                       = "MicrosoftMonitoringAgent"
   depends_on                 = [azurerm_virtual_machine_extension.DAAgentForWindows]
-  virtual_machine_id         = azurerm_virtual_machine.VM.id
+  virtual_machine_id         = azurerm_windows_virtual_machine.VM.id
   publisher                  = "Microsoft.EnterpriseCloud.Monitoring"
   type                       = "MicrosoftMonitoringAgent"
   type_handler_version       = "1.0"

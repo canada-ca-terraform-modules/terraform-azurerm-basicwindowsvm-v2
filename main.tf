@@ -83,25 +83,25 @@ resource azurerm_network_interface_security_group_association nic-nsg {
   network_security_group_id = azurerm_network_security_group.NSG.id
 }
 
-resource azurerm_virtual_machine VM {
+resource azurerm_windows_virtual_machine VM {
   name                             = var.name
   depends_on                       = [var.vm_depends_on]
   location                         = var.location
   resource_group_name              = var.resource_group_name
-  vm_size                          = var.vm_size
+  size                             = var.vm_size #renamed from vm_size
   network_interface_ids            = [azurerm_network_interface.NIC.id]
-  primary_network_interface_id     = azurerm_network_interface.NIC.id
+  #primary_network_interface_id    = removed, now just the first NIC above
   availability_set_id              = var.availability_set_id
-  delete_data_disks_on_termination = "true"
-  delete_os_disk_on_termination    = "true"
+  #delete_data_disks_on_termination = "true" #removed as there is no way to add data disks directly
+  #delete_os_disk_on_termination    = "true" #moved to provider settings - defaults to true
   license_type                     = var.license_type == null ? null : var.license_type
-  os_profile {
-    computer_name  = var.name
-    admin_username = var.admin_username
-    admin_password = var.admin_password
-    custom_data    = var.custom_data
-  }
-  storage_image_reference {
+  computer_name                    = var.name #moved out of os_profile
+  admin_username                   = var.admin_username #moved out of os_profile
+  admin_password                   = var.admin_password #moved out of os_profile
+  custom_data                      = var.custom_data #moved out of os_profile
+  provision_vm_agent               = true #move out of os_profile_windows_config
+
+  source_image_reference {
     publisher = var.storage_image_reference.publisher
     offer     = var.storage_image_reference.offer
     sku       = var.storage_image_reference.sku
@@ -115,34 +115,25 @@ resource azurerm_virtual_machine VM {
       publisher = local.plan[0].publisher
     }
   }
-  os_profile_windows_config {
-    provision_vm_agent = true
-  }
-  storage_os_disk {
+
+  #storage_os_disk is changed to os_disk but some options are different
+  #this resource is now always a managed disk
+  os_disk {
     name              = "${var.name}-osdisk1"
-    caching           = var.storage_os_disk.caching
-    create_option     = var.storage_os_disk.create_option
-    os_type           = var.storage_os_disk.os_type
-    disk_size_gb      = var.storage_os_disk.disk_size_gb
-    managed_disk_type = var.os_managed_disk_type
+    caching           = var.os_disk.caching
+    storage_account_type = var.os_disk.storage_account_type #var should be renamed
+    disk_size_gb      = var.os_disk.disk_size_gb
   }
-  # This is where the magic to dynamically create storage disk operate
-  dynamic "storage_data_disk" {
-    for_each = var.data_disk_sizes_gb
-    content {
-      name              = "${var.name}-datadisk${storage_data_disk.key + 1}"
-      create_option     = "Empty"
-      lun               = storage_data_disk.key
-      disk_size_gb      = storage_data_disk.value
-      caching           = "ReadWrite"
-      managed_disk_type = var.data_managed_disk_type
-    }
-  }
+  /*storage_os_disk #did not find a replace settings for these {
+    create_option     = var.storage_os_disk.create_option #removed, possible braking change
+    os_type           = var.storage_os_disk.os_type #removed, redundent
+  }*/
+
   dynamic "boot_diagnostics" {
     for_each = local.boot_diagnostic
     content {
-      enabled     = true
-      storage_uri = azurerm_storage_account.boot_diagnostic[0].primary_blob_endpoint
+      #enabled     = true #removed
+      storage_account_uri = azurerm_storage_account.boot_diagnostic[0].primary_blob_endpoint
     }
   }
   dynamic "identity" {
@@ -152,4 +143,28 @@ resource azurerm_virtual_machine VM {
     }
   }
   tags = var.tags
+}
+
+# This is where the magic to dynamically create storage disk operate
+# *** completly changes with windows_virtual_machine:
+# *** is now in 2 seperate resources ***
+
+resource azurerm_managed_disk DataDisk {
+  count                 = length(var.data_disk_sizes_gb)
+
+  name                  = "${var.name}-datadisk${count.index + 1}"
+  location              = var.location
+  resource_group_name   = var.resource_group_name
+  storage_account_type  = var.data_managed_disk_type
+  disk_size_gb          = var.data_disk_sizes_gb[count.index]
+  create_option         = "Empty"
+}
+
+resource azurerm_virtual_machine_data_disk_attachment attached_data_disk {
+  count               = length(var.data_disk_sizes_gb)
+
+  managed_disk_id     = azurerm_managed_disk.DataDisk[count.index].id
+  virtual_machine_id  = azurerm_windows_virtual_machine.VM.id
+  lun                 = count.index + 1 
+  caching             = "ReadWrite"
 }
